@@ -1,7 +1,12 @@
-name = "LiMetalPhaseFields"
+name = "BattPhase"
 uuid = "edd044fe-e47f-44cc-921d-3de31ffd016c"
 authors = ["Brady Planden"]
 version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+ProfileView = "c46f51b8-102a-5cf2-8d2c-8597cb0e0da7"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
 julia = "1.7"
