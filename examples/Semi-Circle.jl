@@ -131,12 +131,12 @@ using BattPhase, LinearAlgebra, Plots, BenchmarkTools, SparseArrays#, ProfileVie
 
 
     # Benchmark Rk3
-    t =  @benchmarkable rk3solve!(a,b,c,d,e,f,g,hh,ii,j,k,l,m,o,p,r,s,t,u,v) setup = begin; a=copy($Y₀);b=copy($Φ₀);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h) end
-    run(t, evals=1, seconds=500.0, samples = 7)
+    #t =  @benchmarkable rk3solve!(a,b,c,d,e,f,g,hh,ii,j,k,l,m,o,p,r,s,t,u,v) setup = begin; a=copy($Y₀);b=copy($Φ₀);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h) end
+    #run(t, evals=1, seconds=500.0, samples = 7)
 
     # Benchmark Rk3a
-    # t =  @benchmarkable rk3asolve!(a,b,ba,bb,c,d,e,f,g,hh,ii,j,k,l,m,o,p,pa,pb,r,s,t,u,v) setup = begin; a=copy($Y₀);b=copy($Φ₀);ba=copy($Φₜ);bb=copy($Φₘ);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);pa=copy($V1);pb=copy($V2);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h) end
-    # run(t, evals=1, seconds=500.0, samples = 7)
+    t =  @benchmarkable rk3asolve!(a,b,ba,bb,c,d,e,f,g,hh,ii,j,k,l,m,o,p,pa,pb,r,s,t,u,v) setup = begin; a=copy($Y₀);b=copy($Φ₀);ba=copy($Φₜ₀);bb=copy($Φₘ₀);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);pa=copy($V1);pb=copy($V2);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h) end
+    run(t, evals=1, seconds=500.0, samples = 7)
 
     # Run
     #Ydata_rk3, V_rk3, TT_rk3 = rk3solve!(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,ff₀,dᵦ₀,ν,vv₀,h)
