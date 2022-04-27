@@ -1,6 +1,6 @@
 module BattPhase
 
-    using LinearAlgebra
+    using LinearAlgebra, LoopVectorization
     export y₀!, Eqs11!, Jac!, Upwind!, Φ₊!, Φ̄₊, Ef!
     export Ef2!, Ef3!, YStore, PhiSwitch!, MidPred!
 
