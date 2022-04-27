@@ -32,4 +32,4 @@ include("examples/Semi-example.jl")
 <img src="examples/semicircle_fps15.gif" width="600" align="center"  />
 </p>
 
-[10.1149/osf.io/k2vu6]: https://github.com/BradyPlanden/LiiBRA/issues
+[10.1149/osf.io/k2vu6]: https://ecsarxiv.org/k2vu6/
