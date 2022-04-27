@@ -5,7 +5,7 @@
 [![Build Status](https://github.com/bradyplanden/LiMetalPhaseFields.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/bradyplanden/LiMetalPhaseFields.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/bradyplanden/LiMetalPhaseFields.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/bradyplanden/LiMetalPhaseFields.jl)
 
-BattPhase.jl provides a Julia framework for solving lithium-metal 2D phase field problems. This work is presented to support this pre-print: [10.1149/osf.io/k2vu6]
+BattPhase.jl provides a Julia framework for solving lithium-metal 2D phase field problems. This work is presented to support pre-print: [10.1149/osf.io/k2vu6]
 
 &nbsp;
 
