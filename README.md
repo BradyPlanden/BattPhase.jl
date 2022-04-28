@@ -36,9 +36,10 @@ include("examples/Semi-example.jl")
 
 
 &nbsp;
-<center>
-
 ## Code Timing - Intel 10980XE - Upwind Scheme
+
+<div align="center">
+  
 |Number of Node Points|Runge-Kutta 3 |Runge-Kutta 3 Approximation|
 |:-:|:-:|:-:|
 | 10<sup>2</sup>  |  0.0039 | 0.0013  |
@@ -47,7 +48,5 @@ include("examples/Semi-example.jl")
 |  80<sup>2</sup>| 1.89  | 0.5702 |
 |  160<sup>2</sup> |  16.9 | 5.87  |
 |  320<sup>2</sup> |  185.3 | 62.2  |
-<!-- |  640<sup>2</sup>  |   | 3.7  |
-|  1280<sup>2</sup> |   | 3.7  | -->
-
-</center>
+  
+</div>
