@@ -12,6 +12,7 @@ ProfileView = "c46f51b8-102a-5cf2-8d2c-8597cb0e0da7"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 
 [compat]
+LoopVectorization = "0.12"
 ProfileView = "1"
 julia = "1.7"
 
