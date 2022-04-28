@@ -29,7 +29,7 @@ include("examples/Semi-example.jl")
 &nbsp;
 ## Results
 <p align="center">
-<img src="examples/semicircle_fps15.gif" width="600" align="center"  />
+<img src="examples/semicircle_fps15.gif" width="900" align="center"  />
 </p>
 
 [10.1149/osf.io/k2vu6]: https://ecsarxiv.org/k2vu6/
