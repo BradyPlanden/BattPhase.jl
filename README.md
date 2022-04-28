@@ -33,3 +33,21 @@ include("examples/Semi-example.jl")
 </p>
 
 [10.1149/osf.io/k2vu6]: https://ecsarxiv.org/k2vu6/
+
+
+&nbsp;
+<center>
+
+## Code Timing - Intel 10980XE - Upwind Scheme
+|Number of Node Points|Runge-Kutta 3 |Runge-Kutta 3 Approximation|
+|:-:|:-:|:-:|
+| 10<sup>2</sup>  |  0.0039 | 0.0013  |
+|  20<sup>2</sup> | 0.0303  | 0.00989  |
+|  40<sup>2</sup>|  0.1959 | 0.0677 |
+|  80<sup>2</sup>| 1.89  | 0.5702 |
+|  160<sup>2</sup> |  16.9 | 5.87  |
+|  320<sup>2</sup> |  185.3 | 62.2  |
+<!-- |  640<sup>2</sup>  |   | 3.7  |
+|  1280<sup>2</sup> |   | 3.7  | -->
+
+</center>
