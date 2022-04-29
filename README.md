@@ -42,11 +42,11 @@ include("examples/Semi-example.jl")
   
 |Number of Node Points|Runge-Kutta 3 |Runge-Kutta 3 Approximation|
 |:-:|:-:|:-:|
-| 10<sup>2</sup>  |  0.0039 | 0.0013  |
-|  20<sup>2</sup> | 0.0303  | 0.00989  |
-|  40<sup>2</sup>|  0.1959 | 0.0677 |
-|  80<sup>2</sup>| 1.89  | 0.5702 |
-|  160<sup>2</sup> |  16.9 | 5.87  |
-|  320<sup>2</sup> |  185.3 | 62.2  |
+| 10<sup>2</sup>  |  0.0037 | 0.0013  |
+|  20<sup>2</sup> | 0.0279  | 0.0091  |
+|  40<sup>2</sup>|  0.183 | 0.0614 |
+|  80<sup>2</sup>| 1.42  | 0.487 |
+|  160<sup>2</sup> |  15.0 | 5.19  |
+|  320<sup>2</sup> |  170.6 | 57.5 |
   
 </div>
