@@ -36,7 +36,7 @@ The following results have been obtained utilising Julia 1.7.2, with `Threads.nt
 </p>
 
 
-The following table includes the median result for 7 benchmark samples. Three significant figures are presented.
+The following table includes the median result for 7 benchmark samples up to 320<sup>2</sup>. Results above 320<sup>2</sup> currently include 2 samples with a mean shown. Three significant figures are presented.
 &nbsp;
 ## Code Timing - Upwind Scheme
 
@@ -50,6 +50,7 @@ The following table includes the median result for 7 benchmark samples. Three si
 |  80<sup>2</sup>| 1.58 s | 532 ms|
 |  160<sup>2</sup> |  13.4 s | 4.57 s |
 |  320<sup>2</sup> |  121 s| 41.1 s|
+|  640<sup>2</sup> |  953 s| 315 s|
   
 </div>
 
