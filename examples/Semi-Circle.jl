@@ -2,7 +2,7 @@ using BattPhase, LinearAlgebra, MKL, Pardiso, BenchmarkTools, SparseArrays, Plot
 #using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots#, ProfileView, Infiltrator
     ps = MKLPardisoSolver()
     ## Discretisation Parameters
-    Nx = NN = MM = Ny = Int(320)
+    Nx = NN = MM = Ny = Int(640)
     δ = 0.1
     tt = 0.
     tf = 2.
@@ -163,6 +163,61 @@ using BattPhase, LinearAlgebra, MKL, Pardiso, BenchmarkTools, SparseArrays, Plot
     end
 
 
+    # Pardiso SSP-RK3 Numerical Loop
+    @inline function pdrk3solve(Y,Φ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ)
+        i = 1
+       
+        while tt < tf
+
+            #Ef!
+            Upwind!(Y,F,N,M,δ,h)
+            Ef!(Y,ymid,Φ,F,dt,ν,ki,N,M)
+            Eqs11!(ymid,Φ,δ,ki,ff,N,M,h)
+            Jac!(ymid,ki,j,N,M,h)
+            solve!(ps,dᵦ,j,-ff)
+            Φ₊!(Ntot,Φ,dᵦ)
+
+            #Ef2!
+            Upwind!(ymid,F,N,M,δ,h)
+            Ef2!(Y,ymid,Φ,F,dt,ν,ki,N,M)
+            Eqs11!(ymid,Φ,δ,ki,ff,N,M,h)
+            Jac!(ymid,ki,j,N,M,h)
+            solve!(ps,dᵦ,j,-ff)
+            Φ₊!(Ntot,Φ,dᵦ)
+
+            #Ef3!
+            Upwind!(ymid,F,N,M,δ,h)
+            Ef3!(Y,ymid,Φ,F,dt,ν,ki,N,M)
+            Eqs11!(Y,Φ,δ,ki,ff,N,M,h)
+            Jac!(Y,ki,j,N,M,h)
+            solve!(ps,dᵦ,j,-ff)
+            Φ₊!(Ntot,Φ,dᵦ)
+
+            i += 1
+            V[i] = (Φ[Ntot-2*N+N÷2]/2+Φ[Ntot-2*N+N÷2+1]/2)+h/2*δ
+            V1[i] = Φ[2*N]
+            V[i] = Φ[Ntot-N]+0.5*h*δ
+            TT[i] = TT[i-1]+dt
+            tt += dt
+            # YStore(Y,Ydata,N,M,i) 
+            # Φₐ[i] = Φ̄₊(Y,N,M,Ny)
+            vv = max(abs(Φ[Ntot-2*N+1]),abs(Φ[Ntot-2*N+N÷2]),abs(Φ[Ntot-2*N+N÷2+1]),abs(Φ[Ntot-N]))
+            dt = min(h/vv/ν/ki,tf-tt)
+
+            # if TT[i] >= tf/2
+            #     δ = -0.1
+            # end
+
+        end
+
+        ## Shrink Vectors ##
+        # V2 = V2[1:i]
+        # V1 = V1[1:i]
+        # V = V[1:i]
+        # TT = TT[1:i]
+
+        # return Ydata, V2, V1, V2, TT, Φₐ
+    end
 
 
     # Pardiso - SSP-RK3a Numerical Loop
@@ -196,29 +251,33 @@ using BattPhase, LinearAlgebra, MKL, Pardiso, BenchmarkTools, SparseArrays, Plot
             V[i] = Φ[Ntot-N]+0.5*h*δ
             TT[i] = TT[i-1]+dt
             tt += dt
-            YStore(Y,Ydata,N,M,i) 
-            Φₐ[i] = Φ̄₊(Y,N,M,Ny)
+            #YStore(Y,Ydata,N,M,i) 
+            #Φₐ[i] = Φ̄₊(Y,N,M,Ny)
             vv = max(abs(Φ[Ntot-2*N+1]),abs(Φ[Ntot-2*N+N÷2]),abs(Φ[Ntot-2*N+N÷2+1]),abs(Φ[Ntot-N]))
             dt = min(h/vv/ν/ki,tf-tt)
 
-            if TT[i] >= tf/2
-                δ = -0.1
-            end
+            # if TT[i] >= tf/2
+            #     δ = -0.1
+            # end
 
         end
 
         ## Shrink Vectors ##
-        V2 = V2[1:i]
-        V1 = V1[1:i]
-        V = V[1:i]
-        TT = TT[1:i]
+        # V2 = V2[1:i]
+        # V1 = V1[1:i]
+        # V = V[1:i]
+        # TT = TT[1:i]
 
-        return Ydata, V, V1, V2, TT, Φₐ
+        # return Ydata, V, V1, V2, TT, Φₐ
     end
+
+    ## Benchmark Pardiso Rk3 ##
+    #  t =  @benchmarkable pdrk3solve(a,b,c,d,e,f,g,hh,ii,j,k,l,m,o,p,pa,pb,r,s,t,u,v,w) setup = begin; a=copy($Y₀);b=copy($Φ₀);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);pa=copy($V1);pb=copy($V2);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h);w=copy($Φₐ₀) end
+    #  run(t, evals=1, seconds=1500.0, samples = 7)
 
     ## Benchmark Pardiso RK3a ##
     t =  @benchmarkable pdrk3asolve(a,b,ba,bb,c,d,e,f,g,hh,ii,j,k,l,m,o,p,pa,pb,r,s,t,u,v,w) setup = begin; a=copy($Y₀);b=copy($Φ₀);ba=copy($Φₜ₀);bb=copy($Φₘ₀);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);pa=copy($V1);pb=copy($V2);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h);w=copy($Φₐ₀) end
-    run(t, evals=1, seconds=200.0, samples = 7)
+    run(t, evals=1, seconds=600.0, samples = 7)
 
     ## Benchmark Rk3 ##
     # t =  @benchmarkable rk3solve(a,b,c,d,e,f,g,hh,ii,j,k,l,m,o,p,pa,pb,r,s,t,u,v,w) setup = begin; a=copy($Y₀);b=copy($Φ₀);c=copy($F₀);d=copy($dt₀);e=copy($N);f=copy($M);g=copy($δ);hh=copy($ki₀);ii=copy($ymid₀);j=copy($j₀);k=copy($Ntot);l=copy($tt);m=copy($tf);o=copy($TT);p=copy($V);pa=copy($V1);pb=copy($V2);r=copy($ff₀);s=copy($dᵦ₀);t=copy($ν);u=copy($vv₀);v=copy($h);w=copy($Φₐ₀) end
