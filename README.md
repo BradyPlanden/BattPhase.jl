@@ -28,25 +28,30 @@ include("examples/Semi-example.jl")
 
 &nbsp;
 ## Results
+The following results have been obtained utilising Julia 1.7.2, with `Threads.nthreads() = 1` and Pardiso.jl utilised for LinearAlgebra. Benchmark hardware was a 10980XE with 64Gb of memory. Visual results from the included Semi-Circle example are shown below,
+
+
 <p align="center">
 <img src="examples/semicircle_fps15.gif" width="900" align="center"  />
 </p>
 
-[10.1149/osf.io/k2vu6]: https://ecsarxiv.org/k2vu6/
 
-
+The following table includes the median result for 7 benchmark samples. Three significant figures are presented.
 &nbsp;
-## Code Timing - Intel 10980XE - Upwind Scheme
+## Code Timing - Upwind Scheme
 
 <div align="center">
   
 |Number of Node Points|Runge-Kutta 3 |Runge-Kutta 3 Approximation|
 |:-:|:-:|:-:|
-| 10<sup>2</sup>  |  0.0037 | 0.0013  |
-|  20<sup>2</sup> | 0.0279  | 0.0091  |
-|  40<sup>2</sup>|  0.183 | 0.0614 |
-|  80<sup>2</sup>| 1.42  | 0.487 |
-|  160<sup>2</sup> |  15.0 | 5.19  |
-|  320<sup>2</sup> |  170.6 | 57.5 |
+| 10<sup>2</sup>  |  5.86 ms | 2.02 ms  |
+|  20<sup>2</sup> | 46.7 ms  | 15.6 ms  |
+|  40<sup>2</sup>|  262 ms | 87.7 ms |
+|  80<sup>2</sup>| 1.58 s | 532 ms|
+|  160<sup>2</sup> |  13.4 s | 4.57 s |
+|  320<sup>2</sup> |  121 s| 41.1 s|
   
 </div>
+
+
+[10.1149/osf.io/k2vu6]: https://ecsarxiv.org/k2vu6/
