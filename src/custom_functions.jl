@@ -1,4 +1,4 @@
-## Model 1 Geometry
+## Initial Model 1 Geometry (Semi-Circle)
 function y₀!(NN,MM,Y₀)
     N = NN+2
     h = 1.0/NN
