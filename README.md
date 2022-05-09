@@ -32,7 +32,7 @@ The following results have been obtained utilising Julia 1.7.2, with `Threads.nt
 
 
 <p align="center">
-<img src="examples/semicircle_fps15.gif" width="900" align="center"  />
+<img src="examples/gauss_anim_fps15.gif" width="900" align="center"  />
 </p>
 
 
