@@ -6,6 +6,7 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
     tt = 0.
     tf = 2.
     ν = ki₀ = 1.
+    κ = 0.3
     
     N = Int(NN+2)
     h = 1/NN
@@ -23,7 +24,7 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
     Φₘ₀ = Vector{Float64}(undef,Ntot) .= 0
 
     # Initialisations
-    y₀1!(NN,MM,Y₀)
+    y₀1!(NN,MM,Y₀,κ)
     Eqs11!(Y₀,Φ₀,δ,ki₀,ff₀,N,M,h)
     Jac!(Y₀,ki₀,j₀,N,M,h)
     dᵦ₀ = j₀\-ff₀
@@ -113,7 +114,6 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
     ## Single Run ##
     # @time Ydata_rk3, V_rk3, V1_rk3, V2_rk3, TT_rk3, Φₐ_rk3 = rk3solve(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)
     @time Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)  
-
       
     ## Plotting ##
     TT_trunc = trunc.(TT_rk3a, digits=1)

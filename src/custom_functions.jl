@@ -1,12 +1,12 @@
 ## Model 1 Geometry (Semi-Circle)
-function y₀1!(NN,MM,Y₀)
+function y₀1!(NN,MM,Y₀,κ)
     N = NN+2
     h = 1.0/NN
     w = h/2
     M = MM+2
-    @inbounds @views for j ∈ 2:M-1 for i ∈ 2:N-1
+    @views for j ∈ 2:M-1 for i ∈ 2:N-1
         rr = ((i-3/2)*h)^2+((j-3/2)*h)^2 #combining two variables
-        Y₀[i,j] = max(eps(),0.5*tanh(√2*(√rr-0.3)/w)+0.5) 
+        Y₀[i,j] = max(eps(),0.5*tanh(√2*(√rr-κ)/w)+0.5) # κ = 0.3
 
         for i ∈ 1:N 
             Y₀[i,1] = Y₀[i,2]
