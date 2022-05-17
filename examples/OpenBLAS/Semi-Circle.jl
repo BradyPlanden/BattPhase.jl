@@ -1,6 +1,6 @@
 using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
   
-function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf)
+function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf,Δₜ)
     ## Discretisation Parameters
     N = Int(NN+2)
     h = 1/NN
@@ -27,7 +27,7 @@ function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf)
 
     vv₀ = max(abs(Φ₀[Ntot-2*N+1]),abs(Φ₀[Ntot-2*N+N÷2]),abs(Φ₀[Ntot-2*N+N÷2+1]),abs(Φ₀[Ntot-N]))
     dt₀ = min(h/vv₀/ν/ki₀,tf-tt)
-    Nₜ = ceil(Int64,tf/dt₀)
+    Nₜ = ceil(Int64,(tf/Δₜ)+1)
     V2 = Vector{Float64}(undef,Nₜ) .= 0
     V1 = Vector{Float64}(undef,Nₜ) .= 0
     V = Vector{Float64}(undef,Nₜ) .= 0
@@ -42,9 +42,13 @@ function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf)
     Ydata = Array{Float64}(undef,Nₜ+1,N,M) .= 0
     YStore(Y₀,Ydata,N,M,1)
 
+    #@infiltrate cond=true
+
     ## Single Run ##
     # @time Ydata_rk3, V_rk3, V1_rk3, V2_rk3, TT_rk3, Φₐ_rk3 = rk3solve(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)
-    Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)  
+    Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata,Δₜ)  
     
+    
+
     return Ydata_rk3a
 end
