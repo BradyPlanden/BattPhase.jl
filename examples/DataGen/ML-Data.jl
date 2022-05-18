@@ -1,19 +1,19 @@
 using BattPhase, HDF5, Infiltrator
 
-NN = MM = Int(20)
+NN = MM = Int(100)
 δ = 0.1
 tt = 0.
 tf = 2.
 StepNum = 60
 Δₜ = (tf-tt)/StepNum
 ν = ki₀ = 1.
-ψ = 10
+ψ = 500
 Ydata₁ = Array{Float64}(undef,ψ,StepNum+2,NN+2,MM+2)
+κ₁ = Vector{Float64}(undef,ψ)
 for i ∈ 1:ψ
-    κ = rand(0.1:0.00001:0.4)
-    Ydata₁[i,:,:,:] = Semicircle(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ)
+    κ = rand(0.1:1e-5:0.4)
+    Ydata₁[i,:,:,:], κ₁[i] = Semicircle(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ)
 end
 
 
-# A = collect(reshape(1:120, 15, 8))
-# h5write("/tmp/test2.h5", "mygroup2/A", A)
+save("pde_60_100.h5", OrderedDict("Ydata₁"=>Ydata₁,"κ₁"=>κ₁))

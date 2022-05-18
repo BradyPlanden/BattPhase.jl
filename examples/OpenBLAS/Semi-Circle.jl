@@ -50,5 +50,5 @@ function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf,Δₜ)
     
     
 
-    return Ydata_rk3a
+    return Ydata_rk3a, κ
 end
