@@ -1,6 +1,6 @@
 using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
   
-function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf,Δₜ)
+function Semicircle(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ)
     ## Discretisation Parameters
     N = Int(NN+2)
     h = 1/NN
@@ -27,7 +27,7 @@ function Semicircle(NN,MM,κ,δ,ν,ki0,tt,tf,Δₜ)
 
     vv₀ = max(abs(Φ₀[Ntot-2*N+1]),abs(Φ₀[Ntot-2*N+N÷2]),abs(Φ₀[Ntot-2*N+N÷2+1]),abs(Φ₀[Ntot-N]))
     dt₀ = min(h/vv₀/ν/ki₀,tf-tt)
-    Nₜ = ceil(Int64,(tf/Δₜ)+1)
+    Nₜ = ceil(Int64,(tf/Δₜ)+2)
     V2 = Vector{Float64}(undef,Nₜ) .= 0
     V1 = Vector{Float64}(undef,Nₜ) .= 0
     V = Vector{Float64}(undef,Nₜ) .= 0

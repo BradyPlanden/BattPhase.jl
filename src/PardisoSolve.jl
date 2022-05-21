@@ -95,9 +95,9 @@ end
         vv = max(abs(Φ[Ntot-2*N+1]),abs(Φ[Ntot-2*N+N÷2]),abs(Φ[Ntot-2*N+N÷2+1]),abs(Φ[Ntot-N]))
         dt = min(h/vv/ν/ki,tf-tt)
 
-        if TT[i] >= tf/2
-            δ = -0.1
-        end
+        # if TT[i] >= tf/2
+        #     δ = -0.1
+        # end
 
     end
 

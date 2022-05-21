@@ -7,7 +7,7 @@ module BattPhase
     export Ef!, Ef2!, Ef3!
     export Φ₊!, Φ̄₊, YStore, PhiSwitch!, MidPred!
     export rk3solve, rk3asolve, pdrk3solve, pdrk3asolve, ps
-    export Semicircle
+    export Semicircle, flatten!
 
     include("custom_functions.jl")
     include("PardisoSolve.jl")
