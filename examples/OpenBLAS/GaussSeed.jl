@@ -1,8 +1,8 @@
 using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
    
     ## Discretisation Parameters
-    Nx = MM = Ny = Int(50)
-    NN = 1
+    Nx = MM = Ny = Int(80)
+    NN = Int(10)
     δ = 0.1
     tt = 0.
     tf = 2.
@@ -127,8 +127,10 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
         end
     end
 
-    anim = @animate for i ∈ 1:length(V2_rk3)
-        heatmap(Ydata_rk3[i,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", size=(1280,720))#GnBu_3
-         annotate!(20, 400, Plots.text("$(TT_trunc[i]) Hr", :center))
-    end
-    gif(anim, "anim_fps15.gif", fps = 15) 
+    # anim = @animate for i ∈ 1:length(V2_rk3)
+    #     heatmap(Ydata_rk3[i,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", size=(1280,720))#GnBu_3
+    #      annotate!(20, 400, Plots.text("$(TT_trunc[i]) Hr", :center))
+    # end
+    # gif(anim, "anim_fps15.gif", fps = 15) 
+
+    plot(heatmap(Ydata_rk3[2,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[2], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Semi-Circle Seed", size=(1280,720)))#GnBu_3)
