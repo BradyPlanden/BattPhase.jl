@@ -1,5 +1,5 @@
 # SSP-RK3 Numerical Loop
-@inline function rk3solve(Y,Φ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ,Ydata,Δₜ)
+@inline function rk3solve(Y,Φ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ,Ydata)
     i = 1
    
     while tt < tf
