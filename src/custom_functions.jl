@@ -28,7 +28,7 @@ function y₀4!(NN,MM,Y₀,κ)
     @inbounds @views for j ∈ 2:M-1 for i ∈ 2:N-1
         xₓ = (i-3/2)*h
         y = (j-3/2)*h
-        rᵣ₁ = κ*MM/20#+0.15*exp(-300*(xₓ-0.5)^2)
+        rᵣ₁ = κ*MM/10#+0.15*exp(-300*(xₓ-0.5)^2)
         #rᵣ₂ = 0.2+0.15*exp(-300*(xₓ-0.2)^2)
         Y₀[i,j] = max(eps(),0.5+0.5*tanh((y-rᵣ₁)/w/√2))#,0.5+0.5*tanh((y-rᵣ₂)/w/√2))
 

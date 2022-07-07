@@ -1,19 +1,19 @@
 using BattPhase, HDF5, OrderedCollections, FileIO, Infiltrator
 
 function Data()
-
+    PhaseOut = κout = tuple()
     ξ = 16 # Spacial Range
-    δ = 0.1
     ti = 0.
     tf = 1.
     StepNum = 250
     Δₜ = (tf-ti)/StepNum
     ν = ki₀ = 1.
-    ψ = 300
-    ζ = [200, 100]
+    ψ = 2048
+    ζ = [200, 100, 50, 25]
+    δ = rand(0.01:1e-5:2,ψ)
 
     for ρ ∈ ["train" "valid" "test"]
-        PhaseFieldData = κ = tuple()
+        #PhaseFieldData = tuple()
         for η ∈ ζ
             MM = η
             NN = 5
@@ -21,12 +21,12 @@ function Data()
             κ₁ = Vector{Float64}(undef,ψ)
 
             for i ∈ 1:ψ
-                κ = rand(0.1:1e-5:0.4)
-                Ydata₁[i,:,:,:], κ₁[i] = Seed1D(NN,MM,κ,δ,ν,ki₀,ti,tf,Δₜ)
+                κ = rand(0.1:1e-5:1)
+                Ydata₁[i,:,:,:], κ₁[i] = Seed1D(NN,MM,κ,δ[i],ν,ki₀,ti,tf,Δₜ)
             end
 
-            PhaseFieldData = flatten!(PhaseFieldData, permutedims(Ydata₁,[3,4,2,1])) # Align the output .h5 for python 
-            κ = flatten!(κ,κ₁)
+            PhaseOut = flatten!(PhaseOut, permutedims(Ydata₁,[3,4,2,1])) # Align the output .h5 for python 
+            κout = flatten!(κout,κ₁)
         end
 
 
@@ -35,18 +35,18 @@ function Data()
         f = h5open("CE_$(ρ)_E1.h5","w")  #"r+"? / CE_train_$(Int(tf*60)).h5
         create_group(f, "$ρ")
         g = f["$ρ"] 
-        g["alpha"] = ones(ψ)
         g["beta"] = zeros(ψ)
         g["gamma"] = zeros(ψ)
+        g["alpha"] = δ #zeros(ψ)
         for i ∈ 1:length(ζ)
-        g["pde_$(StepNum)-$(ζ[i])"] = PhaseFieldData[i][3,2:end-1,1:end-2,:]
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["dt"] = Δₜ
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["dx"] = ξ/(ζ[i]-1)
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["nt"] = StepNum
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["nx"] = ζ[i]
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["tmax"] = tf
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["tmin"] = ti
-        attributes(g["pde_$(StepNum)-$(ζ[i])"])["x"] = Vector(range(0,ξ,step=(16/(ζ[i]-1)))) 
+            g["pde_$(StepNum)-$(ζ[i])"] = PhaseOut[i][3,2:end-1,1:end-2,:]
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["dt"] = Δₜ
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["dx"] = ξ/(ζ[i]-1)
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["nt"] = StepNum
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["nx"] = ζ[i]
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["tmax"] = tf
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["tmin"] = ti
+            attributes(g["pde_$(StepNum)-$(ζ[i])"])["x"] = Vector(range(0,ξ,step=(16/(ζ[i]-1)))) 
         end
         close(f)
 
@@ -60,9 +60,10 @@ function Data()
     #     )
     # save("CE_train_$(Int(tf*60)).h5", ω)
 
+    return PhaseOut, δ
 end
 
-Phase = Data()
+Phase, δ = Data()
 
 
 #Dict("train"=>Dict{String,Any}("Phase1"=>[2,3,5],"Phase3"=>rand(3)))
