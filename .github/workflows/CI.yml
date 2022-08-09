@@ -54,6 +54,6 @@ jobs:
       - run: |
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
-            using LiMetalPhaseFields
-            DocMeta.setdocmeta!(LiMetalPhaseFields, :DocTestSetup, :(using LiMetalPhaseFields); recursive=true)
-            doctest(LiMetalPhaseFields)'
+            using BattPhase
+            DocMeta.setdocmeta!(BattPhase, :DocTestSetup, :(using BattPhase); recursive=true)
+            doctest(BattPhase)'

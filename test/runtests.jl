@@ -1,6 +1,6 @@
-using LiMetalPhaseFields
+using BattPhase
 using Test
 
-@testset "LiMetalPhaseFields.jl" begin
+@testset "BattPhase" begin
     # Write your tests here.
 end
