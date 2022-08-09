@@ -28,7 +28,7 @@ include("examples/Semi-example.jl")
 
 &nbsp;
 ## Results
-The following results have been obtained utilising Julia 1.7.2, with `Threads.nthreads() = 1` and Pardiso.jl utilised for LinearAlgebra. Benchmark hardware was a 10980XE with 64Gb of memory. Visual results from the included `Semi-Circle` example are shown below,
+The following results have been obtained utilising Julia 1.7.2, with `Threads.nthreads() = 1` and Pardiso.jl utilised for LinearAlgebra. Benchmark hardware was a 10980XE with 64Gb of memory. Visual results from the included `GaussSeed.jl` example are shown below,
 
 
 <p align="center">
