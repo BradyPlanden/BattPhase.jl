@@ -5,7 +5,7 @@
 [![Build Status](https://github.com/bradyplanden/LiMetalPhaseFields.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/bradyplanden/LiMetalPhaseFields.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/bradyplanden/LiMetalPhaseFields.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/bradyplanden/LiMetalPhaseFields.jl)
 
-BattPhase.jl provides a Julia framework for solving lithium-metal 2D phase field problems. This work is presented to support pre-print: [10.1149/osf.io/k2vu6]
+BattPhase.jl provides a Julia framework for solving 2D lithium-metal phase field problems. This package is presented to support this [publication], please cite it if you use this work.
 
 &nbsp;
 
@@ -28,11 +28,11 @@ include("examples/Semi-example.jl")
 
 &nbsp;
 ## Results
-The following results have been obtained utilising Julia 1.7.2, with `Threads.nthreads() = 1` and Pardiso.jl utilised for LinearAlgebra. Benchmark hardware was a 10980XE with 64Gb of memory. Visual results from the included `Semi-Circle` example are shown below,
+The following results have been obtained utilising Julia 1.7.2, with `Threads.nthreads() = 1` and Pardiso.jl utilised for LinearAlgebra. Benchmark hardware was a 10980XE with 64Gb of memory. Visual results from the included `GaussSeed.jl` example are shown below,
 
 
 <p align="center">
-<img src="examples/semicircle_fps15.gif" width="900" align="center"  />
+<img src="examples/gauss_anim_fps15.gif" width="900" align="center"  />
 </p>
 
 
@@ -55,4 +55,4 @@ The following table includes the median result for 7 benchmark samples up to 320
 </div>
 
 
-[10.1149/osf.io/k2vu6]: https://ecsarxiv.org/k2vu6/
+[publication]: https://doi.org/10.1149/1945-7111/ac86a7

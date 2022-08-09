@@ -1,14 +1,14 @@
 ```@meta
-CurrentModule = LiMetalPhaseFields
+CurrentModule = BattPhase
 ```
 
-# LiMetalPhaseFields
+# BattPhase
 
-Documentation for [LiMetalPhaseFields](https://github.com/bradyplanden/LiMetalPhaseFields.jl).
+Documentation for [BattPhase](https://github.com/bradyplanden/BattPhase.jl).
 
 ```@index
 ```
 
 ```@autodocs
-Modules = [LiMetalPhaseFields]
+Modules = [BattPhase]
 ```

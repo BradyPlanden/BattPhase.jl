@@ -1,16 +1,16 @@
-using LiMetalPhaseFields
+using BattPhase
 using Documenter
 
-DocMeta.setdocmeta!(LiMetalPhaseFields, :DocTestSetup, :(using LiMetalPhaseFields); recursive=true)
+DocMeta.setdocmeta!(BattPhase, :DocTestSetup, :(using BattPhase); recursive=true)
 
 makedocs(;
-    modules=[LiMetalPhaseFields],
+    modules=[BattPhase],
     authors="Brady Planden",
-    repo="https://github.com/bradyplanden/LiMetalPhaseFields.jl/blob/{commit}{path}#{line}",
-    sitename="LiMetalPhaseFields.jl",
+    repo="https://github.com/bradyplanden/BattPhase.jl/blob/{commit}{path}#{line}",
+    sitename="BattPhase.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
-        canonical="https://bradyplanden.github.io/LiMetalPhaseFields.jl",
+        canonical="https://bradyplanden.github.io/BattPhase.jl",
         assets=String[],
     ),
     pages=[
@@ -19,6 +19,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/bradyplanden/LiMetalPhaseFields.jl",
+    repo="github.com/bradyplanden/BattPhase.jl",
     devbranch="main",
 )
