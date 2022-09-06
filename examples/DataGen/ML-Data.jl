@@ -2,34 +2,38 @@ using BattPhase, HDF5, OrderedCollections, FileIO, Infiltrator
 
 function Data()
     PhaseOut = κout = tuple()
-    ξ = 16 # Spacial Range
+    ξ = 40 # Physical Spacial Range
     ti = 0.
     tf = 1.
     StepNum = 250
     Δₜ = (tf-ti)/StepNum
     ν = ki₀ = 1.
-    ψ = 2048
-    ζ = [200, 100, 50, 25]
+    ψ = 16
+    ζ = [50, 25]
+    Z = ζ.^2
     δ = rand(0.01:1e-5:2,ψ)
 
     for ρ ∈ ["train" "valid" "test"]
         #PhaseFieldData = tuple()
         for η ∈ ζ
             MM = η
-            NN = 5
-            Ydata₁ = Array{Float64}(undef,ψ,StepNum+3,NN+2,MM+2)
+            NN = η #5 #Only 5 horizontal points currently
+            γ = (NN)*(MM)
+            LoopStepNum = StepNum+3
+            Ydata₁ = Array{Float64}(undef,ψ,LoopStepNum,NN*MM)
             κ₁ = Vector{Float64}(undef,ψ)
 
             for i ∈ 1:ψ
                 κ = rand(0.1:1e-5:1)
-                Ydata₁[i,:,:,:], κ₁[i] = Seed1D(NN,MM,κ,δ[i],ν,ki₀,ti,tf,Δₜ)
+                Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ,δ[i],ν,ki₀,ti,tf,Δₜ)
             end
+            @show size(Ydata₁)
 
-            PhaseOut = flatten!(PhaseOut, permutedims(Ydata₁,[3,4,2,1])) # Align the output .h5 for python 
+            PhaseOut = flatten!(PhaseOut,permutedims(Ydata₁,[3,2,1])) # Align the output .h5 for python 
             κout = flatten!(κout,κ₁)
+            
         end
-
-
+    
 
         # Training Dataset 
         f = h5open("CE_$(ρ)_E1.h5","w")  #"r+"? / CE_train_$(Int(tf*60)).h5
@@ -39,14 +43,15 @@ function Data()
         g["gamma"] = zeros(ψ)
         g["alpha"] = δ #zeros(ψ)
         for i ∈ 1:length(ζ)
-            g["pde_$(StepNum)-$(ζ[i])"] = PhaseOut[i][3,2:end-1,1:end-2,:]
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["dt"] = Δₜ
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["dx"] = ξ/(ζ[i]-1)
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["nt"] = StepNum
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["nx"] = ζ[i]
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["tmax"] = tf
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["tmin"] = ti
-            attributes(g["pde_$(StepNum)-$(ζ[i])"])["x"] = Vector(range(0,ξ,step=(16/(ζ[i]-1)))) 
+            ϵ = Vector(range(0,ξ,step=(ξ/(Z[i]-1)))) 
+            g["pde_$(StepNum)-$(Z[i])"] = PhaseOut[i]
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["dt"] = Δₜ
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["dx"] = ξ/(Z[i]-1)
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["nt"] = StepNum
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["nx"] = ζ[i]
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["tmax"] = tf
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["tmin"] = ti
+            attributes(g["pde_$(StepNum)-$(Z[i])"])["x"] = ϵ
         end
         close(f)
 
