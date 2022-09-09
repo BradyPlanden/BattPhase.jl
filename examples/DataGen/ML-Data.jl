@@ -5,13 +5,13 @@ function Data()
     ξ = 40 # Physical Spacial Range
     ti = 0.
     tf = 1.
-    StepNum = 250
+    StepNum = 100
     Δₜ = (tf-ti)/StepNum
     ν = ki₀ = 1.
-    ψ = 16
-    ζ = [50, 25]
+    ψ = 128
+    ζ = [86, 43]
     Z = ζ.^2
-    δ = rand(0.01:1e-5:2,ψ)
+    δ = rand(0.1:1e-3:2,ψ)
 
     for ρ ∈ ["train" "valid" "test"]
         #PhaseFieldData = tuple()
@@ -19,7 +19,7 @@ function Data()
             MM = η
             NN = η #5 #Only 5 horizontal points currently
             γ = (NN)*(MM)
-            LoopStepNum = StepNum+3
+            LoopStepNum = StepNum
             Ydata₁ = Array{Float64}(undef,ψ,LoopStepNum,NN*MM)
             κ₁ = Vector{Float64}(undef,ψ)
 

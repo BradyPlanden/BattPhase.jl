@@ -49,14 +49,14 @@ function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ)
     Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata,Δₜ)  
 
     #2D to 1D
-    Y2D = Array{Float64}(undef,size(Ydata_rk3a,1),NN*MM)
-    for k ∈ 1:size(Ydata_rk3a,1)
+    Y2D = Array{Float64}(undef,size(Ydata_rk3a,1)-3,NN*MM) .= 0
+    for k ∈ 1:size(Ydata_rk3a,1)-3
         Ψ = Array{Float64}(undef,0)
         for j ∈ 2:size(Ydata_rk3a,3)-1
             if isodd(j) == true
-                Ψ = [Ψ; reverse(Ydata_rk3a[k,2:end-1,j])]
+                Ψ = [Ψ; reverse(Ydata_rk3a[k,j,2:end-1])]
             else
-                Ψ = [Ψ; Ydata_rk3a[k,2:end-1,j]]
+                Ψ = [Ψ; Ydata_rk3a[k,j,2:end-1]]
             end
         end
        Y2D[k,:] = Ψ
