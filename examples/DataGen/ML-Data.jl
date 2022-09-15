@@ -56,7 +56,7 @@ ti = 0.
 tf = 1.
 StepNum = 100
 ν = ki₀ = 1.
-ψ = [16,8,8]#[1024,256,256]
+ψ = [256,64,64]
 ζ = [86, 43]
 
 ρ = ["train" "valid" "test"]
@@ -64,5 +64,3 @@ StepNum = 100
 for i ∈ 1:length(ρ)
     Phase, δ = Data(ρ[i], StepNum, ti, tf, ψ[i], ζ, ξ, ν, ki₀)
 end
-
-#Dict("train"=>Dict{String,Any}("Phase1"=>[2,3,5],"Phase3"=>rand(3)))
