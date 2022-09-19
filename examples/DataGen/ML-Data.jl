@@ -1,10 +1,10 @@
-using BattPhase, HDF5, OrderedCollections, FileIO, Infiltrator
+using BattPhase, HDF5, OrderedCollections, FileIO, Infiltrator, LatinHypercubeSampling
 
-function Data(ρ, StepNum, ti, tf, ψ, ζ, ξ, ν, ki₀)
+function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀)
     PhaseOut = κout = tuple()
     Δₜ = (tf-ti)/StepNum
     Z = ζ.^2
-    δ = rand(0.1:1e-3:2,ψ)
+    #δ = rand(0.1:1e-3:2,ψ)
 
     for η ∈ ζ
         MM = η
@@ -15,8 +15,9 @@ function Data(ρ, StepNum, ti, tf, ψ, ζ, ξ, ν, ki₀)
         κ₁ = Vector{Float64}(undef,ψ)
 
         for i ∈ 1:ψ
-            κ = rand(0.1:1e-5:1)
-            Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ,δ[i],ν,ki₀,ti,tf,Δₜ)
+            #κ = rand(0.1:1e-5:1)
+            #@infiltrate cond=true
+            Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ) #Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ)
         end
 
         @show size(Ydata₁)
@@ -31,8 +32,8 @@ function Data(ρ, StepNum, ti, tf, ψ, ζ, ξ, ν, ki₀)
     f = h5open("CE_$(ρ)_E1.h5","w")  #"r+"? / CE_train_$(Int(tf*60)).h5
     create_group(f, "$ρ")
     g = f["$ρ"] 
-    g["beta"] = zeros(ψ)
-    g["gamma"] = zeros(ψ)
+    g["beta"] = ki₀
+    g["gamma"] = ν
     g["alpha"] = δ 
     for i ∈ 1:length(ζ)
         ϵ = Vector(range(0,ξ,step=(ξ/(Z[i]-1)))) 
@@ -47,20 +48,35 @@ function Data(ρ, StepNum, ti, tf, ψ, ζ, ξ, ν, ki₀)
     end
     close(f)
 
-return PhaseOut, δ
+return PhaseOut
 
 end
 
-ξ = 40 # Physical Spacial Range
-ti = 0.
-tf = 1.
-StepNum = 100
-ν = ki₀ = 1.
-ψ = [256,64,64]
-ζ = [86, 43]
+function LatinHyper()
+    Output = tuple()
+    ξ = 40 # Physical Spacial Range
+    ti = 0.
+    tf = 1.
+    StepNum = 200
+    #ν = ki₀ = 1.
+    ψ = [512,64,64]
+    ζ = [86, 43]
 
-ρ = ["train" "valid" "test"]
+    ρ = ["train" "valid" "test"]
 
-for i ∈ 1:length(ρ)
-    Phase, δ = Data(ρ[i], StepNum, ti, tf, ψ[i], ζ, ξ, ν, ki₀)
+    for i ∈ 1:length(ρ)
+        plan, _ = LHCoptim(ψ[i],4,1000)
+        δ = plan[:,1]./maximum(plan[:,1]).*2#4 .-2
+        κ = plan[:,2]./maximum(plan[:,2]).*0.8.+0.1
+        ν = plan[:,3]./maximum(plan[:,3]).*0.25 .+ 0.875
+        ki₀ = plan[:,4]./maximum(plan[:,4]).*0.25 .+ 0.875
+
+        #@infiltrate cond=true
+
+        Output = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀)
+    end
+    
+    return Output
 end
+
+Output = LatinHyper()
