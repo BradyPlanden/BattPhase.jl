@@ -28,8 +28,8 @@ function y₀4!(NN,MM,Y₀)
     @inbounds @views for j ∈ 2:M-1 for i ∈ 2:N-1
         xₓ = (i-3/2)*h
         y = (j-3/2)*h
-        rᵣ₁ = 0.2+0.15*exp(-300*(xₓ-0.5)^2)
-        #rᵣ₂ = 0.2+0.15*exp(-300*(xₓ-0.2)^2)
+        rᵣ₁ = 0.125#0.2+0.15*exp(-300*(xₓ-0.5)^2)
+        #rᵣ₂ = 0.6+0.15*exp(-300*(xₓ-0.2)^2)
         Y₀[i,j] = max(eps(),0.5+0.5*tanh((y-rᵣ₁)/w/√2))#,0.5+0.5*tanh((y-rᵣ₂)/w/√2))
 
         for i ∈ 1:N 
@@ -45,17 +45,18 @@ function y₀4!(NN,MM,Y₀)
 end  
 
 
-## System Eqs
+## System Eqs - Linear Kinetics
 function Eqs11!(Y₀,y,δ,ki₀,ff,N,M,h)
 
     @inbounds @views for j ∈ 2:M-1 for i ∈ 2:N-1 
         i1 = i+(j-1)*N
+
         ff[i1] = (Y₀[i,j]+Y₀[i,j+1])*(y[i1+N]-y[i1]) -
-        (Y₀[i,j]+Y₀[i,j-1])*(y[i1]-y[i1-N]) +
-        (Y₀[i+1,j]+Y₀[i,j])*(y[i1+1]-y[i1]) -
-        (Y₀[i,j]+Y₀[i-1,j])*(y[i1]-y[i1-1]) -
-        ki₀*y[i1]*h*(eps()+(Y₀[i+1,j]-Y₀[i-1,j])^2 +
-        (Y₀[i,j+1]-Y₀[i,j-1])^2)^(1/2)
+                 (Y₀[i,j]+Y₀[i,j-1])*(y[i1]-y[i1-N]) +
+                 (Y₀[i+1,j]+Y₀[i,j])*(y[i1+1]-y[i1]) -
+                 (Y₀[i,j]+Y₀[i-1,j])*(y[i1]-y[i1-1]) -
+                 ki₀*y[i1]*h*(eps()+(Y₀[i+1,j]-Y₀[i-1,j])^2 +
+                 (Y₀[i,j+1]-Y₀[i,j-1])^2)^(1/2)
     end end
 
 
