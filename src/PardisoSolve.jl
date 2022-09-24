@@ -1,4 +1,4 @@
-using Pardiso
+using Pardiso, Infiltrator
 ps = MKLPardisoSolver()
 
 # Pardiso SSP-RK3 Numerical Loop

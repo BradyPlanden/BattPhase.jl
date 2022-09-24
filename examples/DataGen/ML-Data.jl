@@ -34,7 +34,8 @@ function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀)
     g = f["$ρ"] 
     g["beta"] = ki₀
     g["gamma"] = ν
-    g["alpha"] = δ 
+    g["alpha"] = δ
+    g["kappa"] = κ 
     for i ∈ 1:length(ζ)
         ϵ = Vector(range(0,ξ,step=(ξ/(Z[i]-1)))) 
         g["pde_$(StepNum)-$(Z[i])"] = PhaseOut[i]
@@ -53,30 +54,53 @@ return PhaseOut
 end
 
 function LatinHyper()
-    Output = tuple()
+    Output = δ_out = κ_out = ν_out = ki₀_out = tuple()
     ξ = 40 # Physical Spacial Range
     ti = 0.
-    tf = 1.
-    StepNum = 200
+    tf = 1/3
+    StepNum = 100
     #ν = ki₀ = 1.
-    ψ = [512,64,64]
-    ζ = [86, 43]
+    ψ = [256,128,128]#[1024,128,128]#[512,64,64]
+    ζ = [80, 40]
+    Mw = 6.941
+    F = 96485
+    R = 8.314
+    T = 298.15
+    ρₛ = 5.34e5
+    n = 1
+    σₑ = 0.05
+    Iₐ = 10
 
     ρ = ["train" "valid" "test"]
 
     for i ∈ 1:length(ρ)
-        plan, _ = LHCoptim(ψ[i],4,1000)
-        δ = plan[:,1]./maximum(plan[:,1]).*2#4 .-2
-        κ = plan[:,2]./maximum(plan[:,2]).*0.8.+0.1
-        ν = plan[:,3]./maximum(plan[:,3]).*0.25 .+ 0.875
-        ki₀ = plan[:,4]./maximum(plan[:,4]).*0.25 .+ 0.875
+
+        plan, _ = LHCoptim((ψ[i])÷2,4,1000)
+        δ = plan[:,1]./maximum(plan[:,1]).*-1.0
+        κ = plan[:,2]./maximum(plan[:,2]).*0.05 .+0.94
+        ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.46
+
+
+        plan, _ = LHCoptim(ψ[i]÷2,4,1000)
+        δ = [δ; plan[:,1]./maximum(plan[:,1]).*1.0]
+        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.05]
+        ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.46]
+
+        ν = @. (Mw*3600*Iₐ)/(ρₛ*F*n*ξ*1e-6*δ)
+
+        
 
         #@infiltrate cond=true
 
-        Output = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀)
+        Out = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀)
+        Output = flatten!(Output,Out)
+        κ_out = flatten!(κ_out,κ)
+        δ_out = flatten!(δ_out,δ)
+        ν_out = flatten!(ν_out,ν)
+        ki₀_out = flatten!(ki₀_out,ki₀)
     end
     
-    return Output
+    return Output, δ_out, κ_out, ν_out, ki₀_out
 end
 
-Output = LatinHyper()
+Output, δ, κ, ν, ki₀ = LatinHyper()

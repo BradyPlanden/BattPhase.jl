@@ -1,6 +1,7 @@
 using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
   
 function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ)
+
     ## Discretisation Parameters
     N = Int(NN+2)
     h = 1/NN
@@ -44,7 +45,9 @@ function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ)
 
     ## Single Run ##
     # @time Ydata_rk3, V_rk3, V1_rk3, V2_rk3, TT_rk3, Φₐ_rk3 = rk3solve(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)
-    Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = pdrk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata,Δₜ)  
+    Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata,Δₜ)  
+
+    #@infiltrate cond=true
 
     #2D to 1D
     Y2D = Array{Float64}(undef,size(Ydata_rk3a,1)-3,NN*MM) .= 0
