@@ -1,28 +1,47 @@
 using BattPhase, HDF5, OrderedCollections, FileIO, Infiltrator, LatinHypercubeSampling
 
-function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀)
+function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀, dims)
     PhaseOut = κout = tuple()
     Δₜ = (tf-ti)/StepNum
-    Z = ζ.^2
-    #δ = rand(0.1:1e-3:2,ψ)
+
+    if dims == 2
+        Z = ζ.^2
+    else
+        Z = ζ
+    end
 
     for η ∈ ζ
-        MM = η
-        NN = η
-        γ = (NN)*(MM)
-        LoopStepNum = StepNum
-        Ydata₁ = Array{Float64}(undef,ψ,LoopStepNum,NN*MM)
+        if dims == 2
+            MM = η
+            NN = η
+            Ydata₁ = Array{Float64}(undef,ψ,StepNum,NN*MM)
+            
+        elseif dims == 1
+            MM = η
+            NN = η
+            Ydata₁ = Array{Float64}(undef,ψ,StepNum,NN,MM)
+        end
+        
         κ₁ = Vector{Float64}(undef,ψ)
 
         for i ∈ 1:ψ
-            #κ = rand(0.1:1e-5:1)
-            #@infiltrate cond=true
-            Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ) #Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ)
+            # if iseven(ψ) == true 
+            #     @show i
+            # end
+            if dims == 2
+                Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ,dims) #Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ)
+            elseif dims == 1
+                Ydata₁[i,:,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ,dims)
+            end
+
         end
 
         @show size(Ydata₁)
-
-        PhaseOut = flatten!(PhaseOut,permutedims(Ydata₁,[3,2,1])) # Align the output .h5 for python 
+        if dims == 2 
+            PhaseOut = flatten!(PhaseOut,permutedims(Ydata₁,[3,2,1])) # Align the output .h5 for python 
+        else dims == 1
+            PhaseOut = flatten!(PhaseOut,permutedims(Ydata₁,[3,4,2,1])) # Align the output .h5 for python 
+        end
         κout = flatten!(κout,κ₁)
         
     end
@@ -37,15 +56,18 @@ function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀)
     g["alpha"] = δ
     g["kappa"] = κ 
     for i ∈ 1:length(ζ)
-        ϵ = Vector(range(0,ξ,step=(ξ/(Z[i]-1)))) 
-        g["pde_$(StepNum)-$(Z[i])"] = PhaseOut[i]
+        if dims == 2
+            g["pde_$(StepNum)-$(Z[i])"] = PhaseOut[i]
+        elseif dims == 1
+            g["pde_$(StepNum)-$(Z[i])"] = PhaseOut[i][size(PhaseOut[i],1),:,:,:]
+        end
         attributes(g["pde_$(StepNum)-$(Z[i])"])["dt"] = Δₜ
         attributes(g["pde_$(StepNum)-$(Z[i])"])["dx"] = ξ/(Z[i]-1)
         attributes(g["pde_$(StepNum)-$(Z[i])"])["nt"] = StepNum
         attributes(g["pde_$(StepNum)-$(Z[i])"])["nx"] = ζ[i]
         attributes(g["pde_$(StepNum)-$(Z[i])"])["tmax"] = tf
         attributes(g["pde_$(StepNum)-$(Z[i])"])["tmin"] = ti
-        attributes(g["pde_$(StepNum)-$(Z[i])"])["x"] = ϵ
+        attributes(g["pde_$(StepNum)-$(Z[i])"])["x"] = Vector(range(0,ξ,step=(ξ/(Z[i]-1)))) 
     end
     close(f)
 
@@ -55,13 +77,14 @@ end
 
 function LatinHyper()
     Output = δ_out = κ_out = ν_out = ki₀_out = tuple()
+    dims = 1
     ξ = 40 # Physical Spacial Range
     ti = 0.
-    tf = 1/3
+    tf = 1.
     StepNum = 100
     #ν = ki₀ = 1.
-    ψ = [256,128,128]#[1024,128,128]#[512,64,64]
-    ζ = [80, 40]
+    ψ = [1024,128,128]#[1024,128,128]#[512,64,64]
+    ζ = [40]
     Mw = 6.941
     F = 96485
     R = 8.314
@@ -76,15 +99,15 @@ function LatinHyper()
     for i ∈ 1:length(ρ)
 
         plan, _ = LHCoptim((ψ[i])÷2,4,1000)
-        δ = plan[:,1]./maximum(plan[:,1]).*-1.0
-        κ = plan[:,2]./maximum(plan[:,2]).*0.05 .+0.94
-        ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.46
+        δ = plan[:,1]./maximum(plan[:,1]).*-3.0
+        κ = plan[:,2]./maximum(plan[:,2]).*0.7 .+ 0.25
+        ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455
 
 
         plan, _ = LHCoptim(ψ[i]÷2,4,1000)
-        δ = [δ; plan[:,1]./maximum(plan[:,1]).*1.0]
-        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.05]
-        ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.46]
+        δ = [δ; plan[:,1]./maximum(plan[:,1]).*3.0]
+        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.75] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
+        ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455]
 
         ν = @. (Mw*3600*Iₐ)/(ρₛ*F*n*ξ*1e-6*δ)
 
@@ -92,7 +115,7 @@ function LatinHyper()
 
         #@infiltrate cond=true
 
-        Out = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀)
+        Out = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀, dims)
         Output = flatten!(Output,Out)
         κ_out = flatten!(κ_out,κ)
         δ_out = flatten!(δ_out,δ)
