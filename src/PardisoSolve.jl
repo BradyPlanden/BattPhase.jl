@@ -40,12 +40,13 @@ ps = MKLPardisoSolver()
         YStore(Y,Ydata,N,M,i) 
         Φₐ[i] = Φ̄₊(Y,N,M)
         vv = max(abs(Φ[Ntot-2*N+1]),abs(Φ[Ntot-2*N+N÷2]),abs(Φ[Ntot-2*N+N÷2+1]),abs(Φ[Ntot-N]))
-        dt = min(h/vv/ν/ki,tf-tt)
+        dt = min(h/vv/abs(ν)/ki,tf-tt)
 
-        if TT[i] >= tf/2
-            δ = -0.1
+        if TT[i] >= tf/2 && k==0
+            δ = -δ
+            ν = -ν
+            k = 1
         end
-
     end
 
     ## Shrink Vectors ##
@@ -93,10 +94,12 @@ end
         YStore(Y,Ydata,N,M,i) 
         Φₐ[i] = Φ̄₊(Y,N,M)
         vv = max(abs(Φ[Ntot-2*N+1]),abs(Φ[Ntot-2*N+N÷2]),abs(Φ[Ntot-2*N+N÷2+1]),abs(Φ[Ntot-N]))
-        dt = min(h/vv/ν/ki,tf-tt)
+        dt = min(h/vv/abs(ν)/ki,tf-tt)
 
-        if TT[i] >= tf/2
-            δ = -0.1
+        if TT[i] >= tf/2 && k==0
+            δ = -δ
+            ν = -ν
+            k = 1
         end
 
     end

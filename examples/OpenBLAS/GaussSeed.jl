@@ -1,11 +1,25 @@
-using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
+using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots
    
     ## Discretisation Parameters
     Nx = NN = MM = Ny = Int(320)
     δ = 0.1
     tt = 0.
     tf = 2.
-    ν = ki₀ = 1.
+
+    Mw = 6.941
+    F = 96485
+    R = 8.314
+    T = 298.15
+    L = 40e-6
+    ρ = 5.34e5
+    n = 1
+    Iₐ = 10
+    i₀ = 50
+    κₑ = 0.05
+
+    ki₀ = (i₀*L*F)/(κₑ*R*T)
+    ν = (3600*Mw*Iₐ)/(ρ*F*L*n*δ)
+    
     
     N = Int(NN+2)
     h = 1/NN
@@ -31,7 +45,7 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
 
 
     vv₀ = max(abs(Φ₀[Ntot-2*N+1]),abs(Φ₀[Ntot-2*N+N÷2]),abs(Φ₀[Ntot-2*N+N÷2+1]),abs(Φ₀[Ntot-N]))
-    dt₀ = min(h/vv₀/ν/ki₀,tf-tt)
+    dt₀ = min(h/vv₀/abs(ν)/ki₀,tf-tt)
     Nₜ = ceil(Int64,tf/dt₀)
     V2 = Vector{Float64}(undef,Nₜ) .= 0
     V1 = Vector{Float64}(undef,Nₜ) .= 0
@@ -111,8 +125,8 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
      # run(t, evals=1, seconds=200.0, samples = 7)
 
     ## Single Run ##
-    # @time Ydata_rk3, V_rk3, V1_rk3, V2_rk3, TT_rk3, Φₐ_rk3 = rk3solve(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)
-      @time Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata) 
+     #@time Ydata_rk3, V_rk3, V1_rk3, V2_rk3, TT_rk3, Φₐ_rk3 = rk3solve(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)
+     @time Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata) 
 
 
     ## Plotting ##
