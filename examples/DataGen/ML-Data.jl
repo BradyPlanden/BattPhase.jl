@@ -80,10 +80,10 @@ function LatinHyper()
     dims = 2
     ξ = 40 # Physical Spacial Range
     ti = 0.
-    tf = 1.
-    StepNum = 100
+    tf = 2.
+    StepNum = 50
     #ν = ki₀ = 1.
-    ψ = [16,16]#[1024,128,128]#[512,64,64]
+    ψ = [512,128,128]#[1024,128,128]#[512,64,64]
     ζ = [40]
     Mw = 6.941
     F = 96485
@@ -94,23 +94,23 @@ function LatinHyper()
     σₑ = 0.05
     Iₐ = 10
 
-    ρ = ["valid" "test"]#["train" "valid" "test"]
+    ρ = ["train" "valid" "test"]
 
     for i ∈ 1:length(ρ)
 
         plan, _ = LHCoptim((ψ[i])÷2,4,1000)
-        δ = plan[:,1]./maximum(plan[:,1]).*-2.0
-        κ = plan[:,2]./maximum(plan[:,2]).*0.65 .+ 0.25 #.*0.7 .+ 0.25
-        ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455
+        δ = plan[:,1]./maximum(plan[:,1]).*-3.0
+        κ = plan[:,2]./maximum(plan[:,2]).*0.75 .+ 0.25 #.*0.7 .+ 0.25
+        #ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455
 
 
         plan, _ = LHCoptim(ψ[i]÷2,4,1000)
-        δ = [δ; plan[:,1]./maximum(plan[:,1]).*2.0]
+        δ = [δ; plan[:,1]./maximum(plan[:,1]).*3.0]
         κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.75] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
-        ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455]
+        #ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455]
 
         ν = @. (Mw*3600*Iₐ)/(ρₛ*F*n*ξ*1e-6*δ)
-
+        ki₀ = ones(ψ[i]).*1.56
         
 
         #@infiltrate cond=true

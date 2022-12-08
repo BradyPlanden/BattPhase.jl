@@ -1,4 +1,5 @@
 using CSV, DataFrames, Plots
+
 function ImportData(PredLoc, GraphLoc)
     df_pred = CSV.read(PredLoc, DataFrame)
     df_graph = CSV.read(GraphLoc, DataFrame)
@@ -6,13 +7,13 @@ function ImportData(PredLoc, GraphLoc)
 end
 
 dims = 2
-df_pred1, df_graph1 = ImportData("92183031418602_DataOut_Pred_010","92183031418602_DataOut_Graph_010")
-#df_pred2, df_graph2 = ImportData("92713630423603_DataOut_Pred_n003_k029_ActFunSwish","92713630423603_DataOut_Graph_n003_k029_ActFunSwish")
+#df_pred1, df_graph1 = ImportData("92183031418602_DataOut_Pred_010","92183031418602_DataOut_Graph_010")
+df_pred1, df_graph1 = ImportData("Complex_DataOut_Pred_n003_k010_ActFunSwish","Complex_DataOut_Graph_n003_k010_ActFunSwish")
 #df_pred3, df_graph3 = ImportData("92713630451820_DataOut_Pred_n003_k031_ActFunSwish","92713630451820_DataOut_Graph_n003_k031_ActFunSwish")
 
 
 if dims == 2
-    NN = MM = 43
+    NN = MM = 40
     νg = Array{Float64}(undef,NN,MM,size(df_graph1,2))
     νp = copy(νg)
     for i ∈ 1:size(df_graph1,2)
@@ -35,7 +36,7 @@ if dims == 2
             end
         end
     end
-    plotly()
+    # plotly()
     l = @layout [a b c{0.33w}; d e f{0.33w}]
     p1 = plot(heatmap(νi[1:40,1:40,1][end:-1:1,:],clims=(0, 1), color = :davos), colorbar=false)
     p2 = plot(heatmap(νi[1:40,1:40,10][end:-1:1,:],clims=(0, 1), color = :davos), colorbar=false)
@@ -44,7 +45,7 @@ if dims == 2
     p4 = plot(heatmap(νt[1:40,1:40,1][end:-1:1,:],clims=(0, 1), color = :davos), xlabel = "Timestep 25")
     p5 = plot(heatmap(νt[1:40,1:40,10][end:-1:1,:],clims=(0, 1), color = :davos), xlabel = "Timestep 35" )
     p6 = plot(heatmap(νt[1:40,1:40,25][end:-1:1,:],clims=(0, 1), color = :davos), xlabel = "Timestep 45")
-    plot(p1,p2,p3,p4,p5,p6, color = :davos, layout=l, size=(1280,720))
+    plot(p1,p2,p3,p4,p5,p6, color = :davos, layout=l)#, size=(1280,720))
 
 elseif dims == 1
 
