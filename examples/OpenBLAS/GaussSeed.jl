@@ -139,9 +139,11 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots
             kk[i] = "Stripping"
         end
     end
+    Lₛ = 40
+    x = y = Lₛ/NN:Lₛ/NN:Lₛ
 
     anim = @animate for i ∈ 1:length(V2_rk3a)
-        heatmap(Ydata_rk3a[i,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", size=(1280,720))#GnBu_3
+        heatmap(x,y,Ydata_rk3a[i,2:end-1,2:end-1]', annotations = (38, 38, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", xtickfontsize=16,ytickfontsize=16,xguidefontsize=16,yguidefontsize=16, size=(1280,720))#GnBu_3
          annotate!(20, 400, Plots.text("$(TT_trunc[i]) Hr", :center))
     end
     gif(anim, "anim_fps15.gif", fps = 15) 

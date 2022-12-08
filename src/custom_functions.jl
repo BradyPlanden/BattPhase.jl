@@ -25,12 +25,13 @@ function y₀4!(NN,MM,Y₀)
     h = 1.0/NN
     w = h/2
     M = MM+2
-    @inbounds @views for j ∈ 2:M-1 for i ∈ 2:N-1
+    @views for j ∈ 2:M-1 for i ∈ 2:N-1
         xₓ = (i-3/2)*h
         y = (j-3/2)*h
-        rᵣ₁ = 0.4#+0.15*exp(-300*(xₓ-0.5)^2)
-        #rᵣ₂ = 0.2+0.15*exp(-300*(xₓ-0.2)^2)
-        Y₀[i,j] = max(eps(),0.5+0.5*tanh((y-rᵣ₁)/w/√2))#,0.5+0.5*tanh((y-rᵣ₂)/w/√2))
+        rᵣ₁ = 0.4+0.1*exp(-300*(xₓ-0.5)^2)
+        rᵣ₂ = 0.4+0.2*exp(-300*(xₓ-0.2)^2)
+        rᵣ₃ = 0.4+0.1375*exp(-300*(xₓ-0.8)^2)
+        Y₀[i,j] = max(eps(),0.5+min(0.5*tanh((y-rᵣ₁)/w/√2),0.5*tanh((y-rᵣ₂)/w/√2),0.5*tanh((y-rᵣ₃)/w/√2)))#,0.5+0.5*tanh((y-rᵣ₂)/w/√2))
 
         for i ∈ 1:N 
             Y₀[i,1] = Y₀[i,2]
