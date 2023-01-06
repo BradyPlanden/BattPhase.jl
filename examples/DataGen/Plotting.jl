@@ -1,4 +1,5 @@
 using CSV, DataFrames, Plots
+plotly()
 
 function ImportData(PredLoc, GraphLoc)
     df_pred = CSV.read(PredLoc, DataFrame)
