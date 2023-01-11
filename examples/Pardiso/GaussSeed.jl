@@ -125,9 +125,16 @@ using BattPhase, Pardiso, LinearAlgebra, MKL, BenchmarkTools, SparseArrays, Plot
             kk[i] = "Stripping"
         end
     end
-
+    gr()
     anim = @animate for i ∈ 1:length(V2_rk3a)
         heatmap(Ydata_rk3a[i,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", size=(1280,720))#GnBu_3
          annotate!(20, 400, Plots.text("$(TT_trunc[i]) Hr", :center))
     end
     gif(anim, "anim_fps15.gif", fps = 15)
+
+    plotly()
+    l = @layout [a b c{0.33w}]
+    p1 = plot(heatmap(Ydata_rk3a[1,2:end-1,2:end-1]',clims=(0, 1), color = :davos), colorbar=false)
+    p2 = plot(heatmap(Ydata_rk3a[50,2:end-1,2:end-1]',clims=(0, 1), color = :davos), colorbar=false)
+    p3 = plot(heatmap(data_rk3a[100,2:end-1,2:end-1]',clims=(0, 1), color = :davos))
+    plot(p1,p2,p3, color = :davos, layout=l)#, size=(1280,720))

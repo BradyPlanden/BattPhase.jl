@@ -63,7 +63,9 @@ end
 @inline function rk3asolve(Y,Φ,Φₜ,Φₘ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ,Ydata)
     i = 1
     k = 0
-
+    if δ <= 0. 
+        ν = -ν
+    end
     while tt < tf
         
         #Ef!
