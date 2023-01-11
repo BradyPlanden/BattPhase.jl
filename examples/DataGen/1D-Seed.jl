@@ -1,6 +1,6 @@
 using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
   
-function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ,dims)
+function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ,dims,γ)
 
     ## Discretisation Parameters
     N = Int(NN+2)
@@ -19,7 +19,7 @@ function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ,dims)
     Φₘ₀ = Vector{Float64}(undef,Ntot) .= 0
 
     # Initialisations
-    y₀4!(NN,MM,Y₀,κ)
+    y₀4!(NN,MM,Y₀,κ,γ)
     Eqs11!(Y₀,Φ₀,δ,ki₀,ff₀,N,M,h)
     Jac!(Y₀,ki₀,j₀,N,M,h)
     dᵦ₀ = j₀\-ff₀

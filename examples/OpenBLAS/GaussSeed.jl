@@ -1,12 +1,12 @@
 using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator#, ProfileView, Infiltrator
    
     ## Discretisation Parameters
-    Nx = MM = Ny = Int(80)
-    NN = Int(10)
-    δ = 0.1
+    NN= Nx = MM = Ny = Int(40)
+    δ = 0.3
     tt = 0.
-    tf = 2.
-    ν = ki₀ = 1.
+    tf = 1.
+    ν = 1.
+    ki₀ = 1.
     
     N = Int(NN+2)
     h = 1/NN
@@ -24,7 +24,7 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
     Φₘ₀ = Vector{Float64}(undef,Ntot) .= 0
 
     # Initialisations
-    y₀4!(NN,MM,Y₀)
+    y₀4!(NN,MM,Y₀,0.8,0.5)
     Eqs11!(Y₀,Φ₀,δ,ki₀,ff₀,N,M,h)
     Jac!(Y₀,ki₀,j₀,N,M,h)
     dᵦ₀ = j₀\-ff₀
@@ -32,7 +32,7 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
 
 
     vv₀ = max(abs(Φ₀[Ntot-2*N+1]),abs(Φ₀[Ntot-2*N+N÷2]),abs(Φ₀[Ntot-2*N+N÷2+1]),abs(Φ₀[Ntot-N]))
-    dt₀ = min(h/vv₀/ν/ki₀,tf-tt)
+    dt₀ = min(h/vv₀/abs(ν)/ki₀,tf-tt)
     Nₜ = ceil(Int64,tf/dt₀+1)
     V2 = Vector{Float64}(undef,Nₜ) .= 0
     V1 = Vector{Float64}(undef,Nₜ) .= 0
@@ -113,13 +113,13 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
 
     ## Single Run ##
      @time Ydata_rk3, V_rk3, V1_rk3, V2_rk3, TT_rk3, Φₐ_rk3 = rk3solve(Y₀,Φ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata)
-    #  @time Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata) 
+    #  @time Ydata_rk3a, V_rk3a, V1_rk3a, V2_rk3a, TT_rk3a, Φₐ_rk3a = rk3asolve(Y₀,Φ₀,Φₜ₀,Φₘ₀,F₀,dt₀,N,M,δ,ki₀,ymid₀,j₀,Ntot,tt,tf,TT,V,V1,V2,ff₀,dᵦ₀,ν,vv₀,h,Φₐ₀,Ydata,dt₀) 
 
 
     ## Plotting ##
-    TT_trunc = trunc.(TT_rk3, digits=1)
-    kk = Vector{String}(undef,length(V2_rk3))
-    for i ∈ 1:length(V2_rk3)
+    TT_trunc = trunc.(TT_rk3a, digits=1)
+    kk = Vector{String}(undef,length(V2_rk3a))
+    for i ∈ 1:length(V2_rk3a)
         if TT[i]<=tf/2
             kk[i] = "Plating"
         else
@@ -127,10 +127,10 @@ using BattPhase, LinearAlgebra, BenchmarkTools, SparseArrays, Plots, Infiltrator
         end
     end
 
-    # anim = @animate for i ∈ 1:length(V2_rk3)
-    #     heatmap(Ydata_rk3[i,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", size=(1280,720))#GnBu_3
-    #      annotate!(20, 400, Plots.text("$(TT_trunc[i]) Hr", :center))
-    # end
-    # gif(anim, "anim_fps15.gif", fps = 15) 
+    anim = @animate for i ∈ 1:length(V2_rk3a)
+        heatmap(Ydata_rk3a[i,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[i], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Gaussian Seed at $(TT_trunc[i]) Hr", size=(1280,720))#GnBu_3
+         annotate!(20, 400, Plots.text("$(TT_trunc[i]) Hr", :center))
+    end
+    gif(anim, "anim_fps15.gif", fps = 15) 
 
-    plot(heatmap(Ydata_rk3[2,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[2], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Semi-Circle Seed", size=(1280,720)))#GnBu_3)
+    # plot(heatmap(Ydata_rk3[2,2:end-1,2:end-1]', annotations = (300, 300, Plots.text(kk[2], :center)), box=:on, c = :davos,bottom_margin=5Plots.mm, left_margin = 7.5Plots.mm, right_margin = 0Plots.mm, top_margin = 5Plots.mm, ylabel = "Position (μm)", xlabel = "Position (μm)",title="Lithium Metal Anode Evolution\nfor Semi-Circle Seed", size=(1280,720)))#GnBu_3)

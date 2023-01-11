@@ -1,6 +1,6 @@
 using BattPhase, HDF5, OrderedCollections, FileIO, Infiltrator, LatinHypercubeSampling
 
-function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀, dims)
+function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀, dims, γ)
     PhaseOut = κout = tuple()
     Δₜ = (tf-ti)/StepNum
 
@@ -29,9 +29,9 @@ function Data(ρ, StepNum, ti, tf, ψ, δ, κ, ζ, ξ, ν, ki₀, dims)
             #     @show i
             # end
             if dims == 2
-                Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ,dims) #Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ)
+                Ydata₁[i,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ,dims,γ[i]) #Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ)
             elseif dims == 1
-                Ydata₁[i,:,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ,dims)
+                Ydata₁[i,:,:,:], κ₁[i] = Seed1D(NN,MM,κ[i],δ[i],ν[i],ki₀[i],ti,tf,Δₜ,dims,γ[i])
             end
 
         end
@@ -76,15 +76,15 @@ return PhaseOut
 end
 
 function LatinHyper()
-    Output = δ_out = κ_out = ν_out = ki₀_out = tuple()
-    dims = 2
+    Output = δ_out = κ_out = ν_out = ki₀_out = γ_out = tuple()
+    dims = 1
     ξ = 40 # Physical Spacial Range
     ti = 0.
-    tf = 2.
+    tf = 1.
     StepNum = 50
     #ν = ki₀ = 1.
     ψ = [512,128,128]#[1024,128,128]#[512,64,64]
-    ζ = [40]
+    ζ = [150]
     Mw = 6.941
     F = 96485
     R = 8.314
@@ -96,34 +96,71 @@ function LatinHyper()
 
     ρ = ["train" "valid" "test"]
 
+    if dims == 2
     for i ∈ 1:length(ρ)
 
         plan, _ = LHCoptim((ψ[i])÷2,4,1000)
         δ = plan[:,1]./maximum(plan[:,1]).*-3.0
-        κ = plan[:,2]./maximum(plan[:,2]).*0.75 .+ 0.25 #.*0.7 .+ 0.25
+        κ = plan[:,2]./maximum(plan[:,2]).*0.45 .+ 0.2 #.*0.7 .+ 0.25
+        γ = plan[:,3]./maximum(plan[:,3]).*0.75 .+ 0.125 
         #ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455
 
 
         plan, _ = LHCoptim(ψ[i]÷2,4,1000)
         δ = [δ; plan[:,1]./maximum(plan[:,1]).*3.0]
-        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.75] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
+        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.45] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
+        γ = [γ; plan[:,3]./maximum(plan[:,3]).*0.75 .+ 0.125]
         #ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455]
 
         ν = @. (Mw*3600*Iₐ)/(ρₛ*F*n*ξ*1e-6*δ)
-        ki₀ = ones(ψ[i]).*1.56
+        ki₀ = ones(ψ[i]).*1.557
         
 
         #@infiltrate cond=true
 
-        Out = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀, dims)
+        Out = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀, dims,γ)
         Output = flatten!(Output,Out)
         κ_out = flatten!(κ_out,κ)
         δ_out = flatten!(δ_out,δ)
         ν_out = flatten!(ν_out,ν)
         ki₀_out = flatten!(ki₀_out,ki₀)
+        γ_out = flatten!(γ_out,γ)
+    end
+
+elseif dims == 1
+    for i ∈ 1:length(ρ)
+
+        plan, _ = LHCoptim((ψ[i])÷2,4,1000)
+        δ = plan[:,1]./maximum(plan[:,1]).*-0.3#-3.0
+        κ = plan[:,2]./maximum(plan[:,2]).*0.6 .+ 0.35
+        γ = plan[:,3]./maximum(plan[:,3]).*0.75 .+ 0.125 
+        #ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455
+
+
+        plan, _ = LHCoptim(ψ[i]÷2,4,1000)
+        δ = [δ; plan[:,1]./maximum(plan[:,1]).*0.3]
+        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.75] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
+        γ = [γ; plan[:,3]./maximum(plan[:,3]).*0.75 .+ 0.125]
+        #ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455]
+
+        ν = ones(ψ[i]) #@. (Mw*3600*Iₐ)/(ρₛ*F*n*ξ*1e-6*δ)
+        ki₀ = ones(ψ[i]) #ones(ψ[i]).*1.557
+        
+
+        #@infiltrate cond=true
+
+        Out = Data(ρ[i], StepNum, ti, tf, ψ[i], δ, κ, ζ, ξ, ν, ki₀, dims,γ)
+        Output = flatten!(Output,Out)
+        κ_out = flatten!(κ_out,κ)
+        δ_out = flatten!(δ_out,δ)
+        ν_out = flatten!(ν_out,ν)
+        ki₀_out = flatten!(ki₀_out,ki₀)
+        γ_out = flatten!(γ_out,γ)
     end
     
-    return Output, δ_out, κ_out, ν_out, ki₀_out
+end
+    
+    return Output, δ_out, κ_out, ν_out, ki₀_out, γ_out
 end
 
-Output, δ, κ, ν, ki₀ = LatinHyper()
+Output, δ, κ, ν, ki₀, γ = LatinHyper()

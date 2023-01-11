@@ -1,7 +1,11 @@
 # SSP-RK3 Numerical Loop
 @inline function rk3solve(Y,Φ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ,Ydata)
     i = 1
-   
+    k = 0
+    if  δ <= 0
+        ν = -ν
+    end
+
     while tt < tf
 
         #Ef!
@@ -37,10 +41,12 @@
         YStore(Y,Ydata,N,M,i) 
         Φₐ[i] = Φ̄₊(Y,N,M)
         vv = max(abs(Φ[Ntot-2*N+1]),abs(Φ[Ntot-2*N+N÷2]),abs(Φ[Ntot-2*N+N÷2+1]),abs(Φ[Ntot-N]))
-        dt = min(h/vv/ν/ki,tf-tt)
+        dt = min(h/vv/abs(ν)/ki,tf-tt)
 
-        if TT[i] >= tf/2
-            δ = -0.1
+        if TT[i] >= tf/2 && k==0
+            δ = -δ
+            ν = -ν
+            k = 1
         end
 
     end
@@ -59,6 +65,9 @@ end
 # SSP-RK3a Numerical Loop
 @inline function rk3asolve(Y,Φ,Φₜ,Φₘ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ,Ydata,Δₜ)
     i = 1
+    if  δ <= 0
+        ν = -ν
+    end
 
     while tt < tf
         
