@@ -8,12 +8,12 @@ end
 
 dims = 1
 #df_pred1, df_graph1 = ImportData("92183031418602_DataOut_Pred_010","92183031418602_DataOut_Graph_010")
-df_pred1, df_graph1 = ImportData("Complex_DataOut_Pred_n003_k073_ActFunSwish","Complex_DataOut_Graph_n003_k073_ActFunSwish")
+df_pred1, df_graph1 = ImportData("DataOut_Pred_i002_n003_k105_ActFunSwish","DataOut_Graph_i002_n003_k105_ActFunSwish")
 #df_pred3, df_graph3 = ImportData("92713630451820_DataOut_Pred_n003_k031_ActFunSwish","92713630451820_DataOut_Graph_n003_k031_ActFunSwish")
 
 
 if dims == 2
-    NN = MM = 40
+    NN = MM = 60
     νg = Array{Float64}(undef,NN,MM,size(df_graph1,2))
     νp = copy(νg)
     for i ∈ 1:size(df_graph1,2)
@@ -51,15 +51,15 @@ if dims == 2
     #p_all = scatter!([0], [0], zcolor=[NaN], clims=(0,1), label="", c=:davos, colorbar_title="cbar", background_color_subplot=:transparent, markerstrokecolor=:transparent, framestyle=:none, inset=bbox(0.1, 0, 0.6, 0.9, :center, :right), subplot=7)
     #savefig("Heatmap.svg")
 elseif dims == 1
-
+    N=60
     #plotly()
     #l = @layout [a b c{0.33w}; d e f{0.33w}]
-    plot(1:size(df_graph1,1), df_graph1[:,1])
-    plot!(1:size(df_pred1,1), df_pred1[:,1])
-    plot!(1:size(df_graph1,1), df_graph1[:,12])
-    plot!(1:size(df_pred1,1), df_pred1[:,12])
-    plot!(1:size(df_graph1,1), df_graph1[:,25])
-    plot!(1:size(df_pred1,1), df_pred1[:,25])
+    plot!(1:N, df_graph1[1:N,1])
+    plot!(1:N, df_pred1[1:N,1])
+    plot!(1:N, df_graph1[1:N,12])
+    plot!(1:N, df_pred1[1:N,12])
+    plot!(1:N, df_graph1[1:N,25])
+    plot!(1:N, df_pred1[1:N,25])
     # p2 = plot(heatmap(νi[:,:,10],clims=(0, 1), color = :davos), colorbar=false)
     # p3 = plot(heatmap(νi[:,:,20],clims=(0, 1), color = :davos))
 

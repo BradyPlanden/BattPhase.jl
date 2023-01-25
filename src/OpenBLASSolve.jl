@@ -65,9 +65,6 @@ end
 # SSP-RK3a Numerical Loop
 @inline function rk3asolve(Y,Φ,Φₜ,Φₘ,F,dt,N,M,δ,ki,ymid,j,Ntot,tt,tf,TT,V,V1,V2,ff,dᵦ,ν,vv,h,Φₐ,Ydata,Δₜ)
     i = 1
-    if  δ <= 0
-        ν = -ν
-    end
 
     while tt < tf
         

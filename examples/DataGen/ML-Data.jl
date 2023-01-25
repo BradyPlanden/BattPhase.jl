@@ -77,14 +77,14 @@ end
 
 function LatinHyper()
     Output = δ_out = κ_out = ν_out = ki₀_out = γ_out = tuple()
-    dims = 1
+    dims = 2
     ξ = 40 # Physical Spacial Range
     ti = 0.
     tf = 1.
-    StepNum = 50
+    StepNum = 90
     #ν = ki₀ = 1.
-    ψ = [512,128,128]#[1024,128,128]#[512,64,64]
-    ζ = [150]
+    ψ = [512,64,64]#[1024,128,128]#[512,64,64]
+    ζ = [40]
     Mw = 6.941
     F = 96485
     R = 8.314
@@ -100,15 +100,15 @@ function LatinHyper()
     for i ∈ 1:length(ρ)
 
         plan, _ = LHCoptim((ψ[i])÷2,4,1000)
-        δ = plan[:,1]./maximum(plan[:,1]).*-3.0
-        κ = plan[:,2]./maximum(plan[:,2]).*0.45 .+ 0.2 #.*0.7 .+ 0.25
+        δ = plan[:,1]./maximum(plan[:,1]).*-0.6
+        κ = plan[:,2]./maximum(plan[:,2]).*0.3 .+ 0.65 #.*0.7 .+ 0.25
         γ = plan[:,3]./maximum(plan[:,3]).*0.75 .+ 0.125 
         #ki₀ = plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455
 
 
         plan, _ = LHCoptim(ψ[i]÷2,4,1000)
-        δ = [δ; plan[:,1]./maximum(plan[:,1]).*3.0]
-        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.45] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
+        δ = [δ; plan[:,1]./maximum(plan[:,1]).*0.6]
+        κ = [κ; plan[:,2]./maximum(plan[:,2]).*0.25] #For grid size = 40 (max(κ) = 13.5 for full plated grid), grid = 80, κ = 27
         γ = [γ; plan[:,3]./maximum(plan[:,3]).*0.75 .+ 0.125]
         #ki₀ = [ki₀; plan[:,4]./maximum(plan[:,4]).*0.2 .+ 1.455]
 

@@ -9,12 +9,12 @@ function Seed1D(NN,MM,κ,δ,ν,ki₀,tt,tf,Δₜ,dims,γ)
     Ntot = N*M
 
     # Pre-Allocations
-    Y₀ = Array{Float64}(undef,N,M) .=0
-    F₀ = Array{Float64}(undef,N,M) .=0
+    Y₀ = Array{Float64}(undef,N,M) .= 0
+    F₀ = Array{Float64}(undef,N,M) .= 0
     Φ₀ = Vector{Float64}(undef,Ntot) .= 0
     ff₀ = Vector{Float64}(undef,Ntot) .= 0
     j₀ = spzeros(Ntot,Ntot)
-    ymid = Array{Float64}(undef,N,M) .=0
+    ymid = Array{Float64}(undef,N,M) .= 0
     Φₜ₀ = Vector{Float64}(undef,Ntot) .= 0
     Φₘ₀ = Vector{Float64}(undef,Ntot) .= 0
 
